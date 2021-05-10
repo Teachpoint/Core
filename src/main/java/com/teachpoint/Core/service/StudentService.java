@@ -12,5 +12,7 @@ public interface StudentService {
 
 //    StudentDto getStudent(String  email);
 
-    ResponseEntity<ResponseMessage> activateStudent(Long  studentId, String otpCode);
+    ResponseEntity<String> activateStudent(Long  studentId, String otpCode);
+
+    ResponseMessage attendStudentToGrade(Long studentId, Long gradeId);
 }

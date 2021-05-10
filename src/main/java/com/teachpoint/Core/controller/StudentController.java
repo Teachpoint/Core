@@ -55,20 +55,20 @@ public class StudentController {
     public ResponseEntity<StudentDto> saveStudent(@Valid @RequestBody StudentDto studentDto) {
 
         StudentDto studentDtoResponse = studentService.saveStudent(studentDto);
-        ResponseEntity<StudentDto> responseEntity = new ResponseEntity<>(studentDtoResponse, HttpStatus.OK);
+        ResponseEntity<StudentDto> responseEntity = new ResponseEntity<>(studentDtoResponse, HttpStatus.CREATED);
 
         return responseEntity;
     }
 
 
     /**
-     * @param studentId Student unique name
+     * @param objectId Student or Teacher unique name
      * @return
      */
-    @PostMapping("/generateOTP/{studentId}")
-    public ResponseEntity<String> generateOTP(@PathVariable String studentId) {
+    @PostMapping("/generateOTP/{objectId}")
+    public ResponseEntity<String> generateOTP(@PathVariable String objectId) {
 
-        String otpLink = "http://TEACHPOINT-NOTIFICATION/api/v1/generateOTP/" + studentId;
+        String otpLink = "http://TEACHPOINT-NOTIFICATION/api/v1/generateOTP/" + objectId;
         System.out.println(otpLink);
         try {
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(otpLink, String.class);
@@ -88,9 +88,26 @@ public class StudentController {
      * @return
      */
     @GetMapping("/activateStudent/{studentId}")
-    public ResponseEntity<ResponseMessage> activateStudent(@PathVariable Long studentId, @RequestParam String otpCode) {
+    public ResponseEntity<String> activateStudent(@PathVariable Long studentId, @RequestParam String otpCode) {
         return studentService.activateStudent(studentId, otpCode);
     }
+
+
+    /**
+     * @param studentId   Student unique name
+     * @param gradeId class id
+     * @return
+     */
+    @PutMapping("/attend/{studentId}/{gradeId}")
+    public ResponseEntity<ResponseMessage> attendToGrade(@PathVariable Long studentId, @PathVariable Long gradeId) {
+        ResponseMessage response = studentService.attendStudentToGrade(studentId, gradeId);
+
+        if (response.getResponseCode() == 200){
+            return ResponseEntity.ok().body(response);
+        }
+        return ResponseEntity.badRequest().body(response);
+    }
+
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
